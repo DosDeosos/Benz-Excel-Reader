@@ -25,7 +25,7 @@
 *.pem
 
 # excel folder
-/excel/
+/src/excel/
 
 # debug
 npm-debug.log*
