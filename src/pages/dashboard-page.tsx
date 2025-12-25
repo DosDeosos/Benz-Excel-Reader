@@ -1,3 +1,5 @@
+"use client";
+
 import { DashboardLayout } from "@/components/dashboard-layout";
 import {
   Card,
@@ -6,167 +8,168 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { BarChart3, DollarSign, TrendingUp, Users } from "lucide-react";
+import inventoryJson from "@/data/inventory.json";
+import { InventoryItem } from "@/types/excel-data";
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Legend,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 
 export default function DashboardPage() {
-  const stats = [
-    {
-      title: "รายได้รวม",
-      value: "$45,231.89",
-      change: "+20.1% จากเดือนที่แล้ว",
-      icon: DollarSign,
-      color: "text-green-600 dark:text-green-400",
-      bgColor: "bg-green-100 dark:bg-green-950",
-    },
-    {
-      title: "ผู้ใช้ที่ใช้งาน",
-      value: "2,350",
-      change: "+180 ผู้ใช้ใหม่",
-      icon: Users,
-      color: "text-blue-600 dark:text-blue-400",
-      bgColor: "bg-blue-100 dark:bg-blue-950",
-    },
-    {
-      title: "คำสั่งซื้อทั้งหมด",
-      value: "12,234",
-      change: "+19% จากเดือนที่แล้ว",
-      icon: BarChart3,
-      color: "text-purple-600 dark:text-purple-400",
-      bgColor: "bg-purple-100 dark:bg-purple-950",
-    },
-    {
-      title: "อัตราการเติบโต",
-      value: "+12.5%",
-      change: "เติบโตอย่างต่อเนื่อง",
-      icon: TrendingUp,
-      color: "text-orange-600 dark:text-orange-400",
-      bgColor: "bg-orange-100 dark:bg-orange-950",
-    },
-  ];
+  const inventoryData: InventoryItem[] = inventoryJson as InventoryItem[];
+
+  const totalItems = inventoryData.reduce(
+    (sum, item) => sum + (item["จำนวนที่มี"] || 0),
+    0
+  );
+  const totalUsed = inventoryData.reduce(
+    (sum, item) => sum + (item["เบิกใช้งาน"] || 0),
+    0
+  );
+  const totalRemaining = inventoryData.reduce(
+    (sum, item) => sum + (item["คงเหลือ"] || 0),
+    0
+  );
 
   return (
     <DashboardLayout>
       <div className="space-y-8">
         <div>
-          <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-50 animate-in slide-in-from-left-4 fade-in duration-500">
+          <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-50">
             แดชบอร์ด
           </h1>
-          <p className="text-slate-600 dark:text-slate-400 mt-2 animate-in slide-in-from-left-4 fade-in duration-500 delay-100">
-            ยินดีต้อนรับกลับมา! นี่คือภาพรวมของคุณ
+          <p className="text-slate-600 dark:text-slate-400 mt-2">
+            ภาพรวมสินค้าคงคลังและสถิติ
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {stats.map((stat, index) => {
-            const Icon = stat.icon;
-            return (
-              <div
-                key={stat.title}
-                className="animate-in zoom-in-50 fade-in duration-500 fill-mode-backwards"
-                style={{ animationDelay: `${index * 100}ms` }}
-              >
-                <Card className="hover:shadow-lg transition-shadow duration-200 h-full">
-                  <CardHeader className="flex flex-row items-center justify-between pb-2">
-                    <CardTitle className="text-sm font-medium text-slate-600 dark:text-slate-400">
-                      {stat.title}
-                    </CardTitle>
-                    <div className={`p-2 rounded-lg ${stat.bgColor}`}>
-                      <Icon className={`h-5 w-5 ${stat.color}`} />
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-2xl font-bold text-slate-900 dark:text-slate-50">
-                      {stat.value}
-                    </div>
-                    <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">
-                      {stat.change}
-                    </p>
-                  </CardContent>
-                </Card>
+        {/* Summary Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-slate-500">
+                จำนวนทั้งหมด
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold">
+                {totalItems.toLocaleString()}
               </div>
-            );
-          })}
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-slate-500">
+                เบิกใช้งานแล้ว
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold text-blue-600">
+                {totalUsed.toLocaleString()}
+              </div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-slate-500">
+                คงเหลือในคลัง
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold text-green-600">
+                {totalRemaining.toLocaleString()}
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="animate-in slide-in-from-bottom-4 fade-in duration-700 delay-300">
-            <Card className="hover:shadow-lg transition-shadow duration-200 h-full">
-              <CardHeader>
-                <CardTitle>กิจกรรมล่าสุด</CardTitle>
-                <CardDescription>กิจกรรมล่าสุดของระบบ</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {[
-                    { action: "ผู้ใช้ใหม่ลงทะเบียน", time: "2 นาทีที่แล้ว" },
-                    {
-                      action: "คำสั่งซื้อ #1234 เสร็จสมบูรณ์",
-                      time: "15 นาทีที่แล้ว",
-                    },
-                    { action: "อัปเดตคลังสินค้า", time: "1 ชั่วโมงที่แล้ว" },
-                    { action: "สร้างรายงาน", time: "2 ชั่วโมงที่แล้ว" },
-                  ].map((activity, index) => (
-                    <div
-                      key={index}
-                      className="flex justify-between items-center py-2 border-b last:border-0 hover:bg-slate-50 dark:hover:bg-slate-900/50 px-2 rounded-lg transition-colors cursor-default"
-                    >
-                      <span className="text-sm text-slate-700 dark:text-slate-300">
-                        {activity.action}
-                      </span>
-                      <span className="text-xs text-slate-500 dark:text-slate-500">
-                        {activity.time}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          <div className="animate-in slide-in-from-bottom-4 fade-in duration-700 delay-500">
-            <Card className="hover:shadow-lg transition-shadow duration-200 h-full">
-              <CardHeader>
-                <CardTitle>สถิติด่วน</CardTitle>
-                <CardDescription>ภาพรวมเมตริกประสิทธิภาพ</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-6">
-                  {[
-                    { label: "อัตราการแปลง", value: "3.2%", progress: 32 },
-                    {
-                      label: "มูลค่าคำสั่งซื้อเฉลี่ย",
-                      value: "$89.50",
-                      progress: 65,
-                    },
-                    {
-                      label: "ความพึงพอใจของลูกค้า",
-                      value: "94%",
-                      progress: 94,
-                    },
-                    { label: "เวลาตอบสนอง", value: "1.2s", progress: 45 },
-                  ].map((metric, index) => (
-                    <div key={index} className="space-y-2 group">
-                      <div className="flex justify-between text-sm">
-                        <span className="text-slate-700 dark:text-slate-300 font-medium">
-                          {metric.label}
-                        </span>
-                        <span className="font-semibold text-slate-900 dark:text-slate-50">
-                          {metric.value}
-                        </span>
-                      </div>
-                      <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-2.5 overflow-hidden">
-                        <div
-                          className="bg-linear-to-r from-blue-600 to-indigo-600 h-full rounded-full transition-all duration-1000 ease-out group-hover:scale-x-[1.02] origin-left"
-                          style={{ width: `${metric.progress}%` }}
-                        />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
+        {/* Bar Chart */}
+        <Card className="col-span-1">
+          <CardHeader>
+            <CardTitle>สถานะสินค้าคงคลัง</CardTitle>
+            <CardDescription>
+              เปรียบเทียบจำนวนที่มีทั้งหมด, เบิกใช้งาน, และคงเหลือ แยกตามประเภท
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="h-125 w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart
+                  data={inventoryData}
+                  margin={{
+                    top: 20,
+                    right: 30,
+                    left: 20,
+                    bottom: 70,
+                  }}
+                >
+                  <CartesianGrid
+                    strokeDasharray="3 3"
+                    vertical={false}
+                    stroke="currentColor"
+                    className="text-slate-200 dark:text-slate-700"
+                  />
+                  <XAxis
+                    dataKey="TDM Inventory"
+                    angle={-45}
+                    textAnchor="end"
+                    height={80}
+                    interval={0}
+                    tick={{ fontSize: 12, fill: "currentColor" }}
+                    className="text-slate-600 dark:text-slate-400"
+                    stroke="currentColor"
+                  />
+                  <YAxis
+                    tick={{ fontSize: 12, fill: "currentColor" }}
+                    className="text-slate-600 dark:text-slate-400"
+                    stroke="currentColor"
+                  />
+                  <Tooltip
+                    cursor={{ fill: "transparent" }}
+                    contentStyle={{
+                      borderRadius: "8px",
+                      border: "none",
+                      boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
+                      backgroundColor: "#ffffff",
+                      color: "#1e293b",
+                    }}
+                  />
+                  <Legend
+                    verticalAlign="top"
+                    height={36}
+                    wrapperStyle={{
+                      color: "hsl(var(--foreground))",
+                    }}
+                  />
+                  <Bar
+                    dataKey="จำนวนที่มี"
+                    name="จำนวนทั้งหมด"
+                    fill="#94a3b8"
+                    radius={[4, 4, 0, 0]}
+                  />
+                  <Bar
+                    dataKey="เบิกใช้งาน"
+                    name="เบิกใช้งาน"
+                    fill="#3b82f6"
+                    radius={[4, 4, 0, 0]}
+                  />
+                  <Bar
+                    dataKey="คงเหลือ"
+                    name="คงเหลือ"
+                    fill="#22c55e"
+                    radius={[4, 4, 0, 0]}
+                  />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </DashboardLayout>
   );

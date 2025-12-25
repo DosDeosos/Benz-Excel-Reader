@@ -1,5 +1,7 @@
+"use client";
+
 import { DashboardLayout } from "@/components/dashboard-layout";
-import { Button } from "@/components/ui/button";
+import { PaginationControls } from "@/components/pagination-controls";
 import {
   Card,
   CardContent,
@@ -9,11 +11,41 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import dataJson from "@/data/data.json";
+import { usePagination } from "@/hooks/use-pagination";
+import { useSearch } from "@/hooks/use-search";
 import { DataItem } from "@/types/excel-data";
-import { ArrowUpDown, Download, Filter, Search } from "lucide-react";
+import { ArrowUpDown, Search } from "lucide-react";
+import { useEffect } from "react";
 
 export default function DataCollectionPage() {
   const data: DataItem[] = dataJson as DataItem[];
+
+  const { query, setQuery, filteredData } = useSearch(data, [
+    "Hostname",
+    "เลข ทรัพย์สิน",
+    "Serial Number",
+    "Asset Owner",
+    "Location of Work",
+  ]);
+
+  const {
+    paginatedData,
+    currentPage,
+    totalPages,
+    goToPage,
+    nextPage,
+    previousPage,
+    resetToFirstPage,
+    hasNextPage,
+    hasPreviousPage,
+    startIndex,
+    endIndex,
+    totalItems,
+  } = usePagination({ data: filteredData, itemsPerPage: 10 });
+
+  useEffect(() => {
+    resetToFirstPage();
+  }, [query, resetToFirstPage]);
 
   return (
     <DashboardLayout>
@@ -33,22 +65,19 @@ export default function DataCollectionPage() {
               <div>
                 <CardTitle>คอลเลกชันข้อมูล</CardTitle>
                 <CardDescription>
-                  ทั้งหมด {data.length} รายการที่พร้อมใช้งาน
+                  ทั้งหมด {filteredData.length} รายการที่พร้อมใช้งาน
                 </CardDescription>
               </div>
               <div className="flex flex-col sm:flex-row gap-2">
                 <div className="relative flex-1 sm:w-64">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
-                  <Input placeholder="ค้นหาข้อมูล..." className="pl-9" />
+                  <Input
+                    placeholder="ค้นหาข้อมูล..."
+                    className="pl-9"
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                  />
                 </div>
-                <Button variant="outline" className="gap-2">
-                  <Filter className="h-4 w-4" />
-                  ตัวกรอง
-                </Button>
-                <Button className="gap-2">
-                  <Download className="h-4 w-4" />
-                  ส่งออก
-                </Button>
               </div>
             </div>
           </CardHeader>
@@ -90,7 +119,7 @@ export default function DataCollectionPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {data.map((item, index) => (
+                  {paginatedData.map((item, index) => (
                     <tr
                       key={`${item.Hostname}-${index}`}
                       className={`border-b last:border-0 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors ${
@@ -130,6 +159,18 @@ export default function DataCollectionPage() {
               </table>
             </div>
           </CardContent>
+          <PaginationControls
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={goToPage}
+            onPrevious={previousPage}
+            onNext={nextPage}
+            hasPreviousPage={hasPreviousPage}
+            hasNextPage={hasNextPage}
+            startIndex={startIndex}
+            endIndex={endIndex}
+            totalItems={totalItems}
+          />
         </Card>
       </div>
     </DashboardLayout>

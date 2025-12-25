@@ -1,5 +1,7 @@
+"use client";
+
 import { DashboardLayout } from "@/components/dashboard-layout";
-import { Button } from "@/components/ui/button";
+import { PaginationControls } from "@/components/pagination-controls";
 import {
   Card,
   CardContent,
@@ -9,12 +11,39 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import inventoryJson from "@/data/inventory.json";
+import { usePagination } from "@/hooks/use-pagination";
+import { useSearch } from "@/hooks/use-search";
 import { InventoryItem } from "@/types/excel-data";
-import { AlertTriangle, Package, Plus, Search, TrendingUp } from "lucide-react";
+import { AlertTriangle, Package, Search, TrendingUp } from "lucide-react";
+import { useEffect } from "react";
 
 export default function InventoryPage() {
   const inventoryData: InventoryItem[] = inventoryJson as InventoryItem[];
-  const totalItems = inventoryData.reduce(
+
+  const { query, setQuery, filteredData } = useSearch(inventoryData, [
+    "TDM Inventory",
+  ]);
+
+  const {
+    paginatedData,
+    currentPage,
+    totalPages,
+    goToPage,
+    nextPage,
+    previousPage,
+    resetToFirstPage,
+    hasNextPage,
+    hasPreviousPage,
+    startIndex,
+    endIndex,
+    totalItems,
+  } = usePagination({ data: filteredData, itemsPerPage: 10 });
+
+  useEffect(() => {
+    resetToFirstPage();
+  }, [query, resetToFirstPage]);
+
+  const totalItems_all = inventoryData.reduce(
     (sum, item) => sum + (item["จำนวนที่มี"] || 0),
     0
   );
@@ -26,10 +55,11 @@ export default function InventoryPage() {
     (sum, item) => sum + (item["คงเหลือ"] || 0),
     0
   );
+
   const inventoryStats = [
     {
       title: "รายการทั้งหมด",
-      value: totalItems.toLocaleString(),
+      value: totalItems_all.toLocaleString(),
       icon: Package,
       color: "text-blue-600 dark:text-blue-400",
       bgColor: "bg-blue-100 dark:bg-blue-950",
@@ -94,18 +124,19 @@ export default function InventoryPage() {
               <div>
                 <CardTitle>รายการสินค้า</CardTitle>
                 <CardDescription>
-                  จัดการสินค้าคงคลังของคุณ ({inventoryData.length} รายการ)
+                  จัดการสินค้าคงคลังของคุณ ({filteredData.length} รายการ)
                 </CardDescription>
               </div>
               <div className="flex flex-col sm:flex-row gap-2">
                 <div className="relative flex-1 sm:w-64">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
-                  <Input placeholder="ค้นหาคลังสินค้า..." className="pl-9" />
+                  <Input
+                    placeholder="ค้นหาคลังสินค้า..."
+                    className="pl-9"
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                  />
                 </div>
-                <Button className="gap-2">
-                  <Plus className="h-4 w-4" />
-                  เพิ่มรายการ
-                </Button>
               </div>
             </div>
           </CardHeader>
@@ -129,7 +160,7 @@ export default function InventoryPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {inventoryData.map((item, index) => {
+                  {paginatedData.map((item, index) => {
                     return (
                       <tr
                         key={`${item["TDM Inventory"]}-${index}`}
@@ -166,6 +197,18 @@ export default function InventoryPage() {
               </table>
             </div>
           </CardContent>
+          <PaginationControls
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={goToPage}
+            onPrevious={previousPage}
+            onNext={nextPage}
+            hasPreviousPage={hasPreviousPage}
+            hasNextPage={hasNextPage}
+            startIndex={startIndex}
+            endIndex={endIndex}
+            totalItems={totalItems}
+          />
         </Card>
       </div>
     </DashboardLayout>
