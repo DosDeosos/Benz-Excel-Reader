@@ -10,11 +10,14 @@ import {
 } from "@/components/ui/card";
 import inventoryJson from "@/data/inventory.json";
 import { InventoryItem } from "@/types/excel-data";
+import { useEffect, useState } from "react";
 import {
   Bar,
   BarChart,
   CartesianGrid,
   Legend,
+  Line,
+  LineChart,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -23,6 +26,20 @@ import {
 
 export default function DashboardPage() {
   const inventoryData: InventoryItem[] = inventoryJson as InventoryItem[];
+  const [isDesktop, setIsDesktop] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsDesktop(window.innerWidth >= 1024);
+      setIsMobile(window.innerWidth <= 768);
+    };
+
+    checkScreenSize();
+    window.addEventListener("resize", checkScreenSize);
+
+    return () => window.removeEventListener("resize", checkScreenSize);
+  }, []);
 
   const totalItems = inventoryData.reduce(
     (sum, item) => sum + (item["จำนวนที่มี"] || 0),
@@ -49,7 +66,6 @@ export default function DashboardPage() {
           </p>
         </div>
 
-        {/* Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <Card>
             <CardHeader className="pb-2">
@@ -89,7 +105,6 @@ export default function DashboardPage() {
           </Card>
         </div>
 
-        {/* Bar Chart */}
         <Card className="col-span-1">
           <CardHeader>
             <CardTitle>สถานะสินค้าคงคลัง</CardTitle>
@@ -97,74 +112,154 @@ export default function DashboardPage() {
               เปรียบเทียบจำนวนที่มีทั้งหมด, เบิกใช้งาน, และคงเหลือ แยกตามประเภท
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="px-2 sm:px-6">
             <ResponsiveContainer width="100%" height={500}>
-              <BarChart
-                data={inventoryData}
-                margin={{
-                  top: 20,
-                  right: 30,
-                  left: 20,
-                  bottom: 70,
-                }}
-              >
-                <CartesianGrid
-                  strokeDasharray="3 3"
-                  vertical={false}
-                  stroke="currentColor"
-                  className="text-slate-200 dark:text-slate-700"
-                />
-                <XAxis
-                  dataKey="TDM Inventory"
-                  angle={-45}
-                  textAnchor="end"
-                  height={80}
-                  interval={0}
-                  tick={{ fontSize: 12, fill: "currentColor" }}
-                  className="text-slate-600 dark:text-slate-400"
-                  stroke="currentColor"
-                />
-                <YAxis
-                  tick={{ fontSize: 12, fill: "currentColor" }}
-                  className="text-slate-600 dark:text-slate-400"
-                  stroke="currentColor"
-                />
-                <Tooltip
-                  cursor={{ fill: "transparent" }}
-                  contentStyle={{
-                    borderRadius: "8px",
-                    border: "none",
-                    boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
-                    backgroundColor: "#ffffff",
-                    color: "#1e293b",
+              {isDesktop ? (
+                <BarChart
+                  data={inventoryData}
+                  margin={{
+                    top: 20,
+                    right: 30,
+                    left: 20,
+                    bottom: 70,
                   }}
-                />
-                <Legend
-                  verticalAlign="top"
-                  height={36}
-                  wrapperStyle={{
-                    color: "hsl(var(--foreground))",
+                >
+                  <CartesianGrid
+                    strokeDasharray="3 3"
+                    vertical={false}
+                    stroke="currentColor"
+                    className="text-slate-200 dark:text-slate-700"
+                  />
+                  <XAxis
+                    dataKey="TDM Inventory"
+                    angle={-45}
+                    textAnchor="end"
+                    height={80}
+                    interval={0}
+                    tick={{ fontSize: 12, fill: "currentColor" }}
+                    className="text-slate-600 dark:text-slate-400"
+                    stroke="currentColor"
+                  />
+                  <YAxis
+                    tick={{ fontSize: 12, fill: "currentColor" }}
+                    className="text-slate-600 dark:text-slate-400"
+                    stroke="currentColor"
+                  />
+                  <Tooltip
+                    cursor={{ fill: "transparent" }}
+                    contentStyle={{
+                      borderRadius: "8px",
+                      border: "none",
+                      boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
+                      backgroundColor: "#ffffff",
+                      color: "#1e293b",
+                    }}
+                  />
+                  <Legend
+                    verticalAlign="top"
+                    height={36}
+                    wrapperStyle={{
+                      color: "hsl(var(--foreground))",
+                    }}
+                  />
+                  <Bar
+                    dataKey="จำนวนที่มี"
+                    name="จำนวนทั้งหมด"
+                    fill="#94a3b8"
+                    radius={[4, 4, 0, 0]}
+                  />
+                  <Bar
+                    dataKey="เบิกใช้งาน"
+                    name="เบิกใช้งาน"
+                    fill="#3b82f6"
+                    radius={[4, 4, 0, 0]}
+                  />
+                  <Bar
+                    dataKey="คงเหลือ"
+                    name="คงเหลือ"
+                    fill="#22c55e"
+                    radius={[4, 4, 0, 0]}
+                  />
+                </BarChart>
+              ) : (
+                <LineChart
+                  data={inventoryData}
+                  margin={{
+                    top: 20,
+                    right: 10,
+                    left: -10,
+                    bottom: 120,
                   }}
-                />
-                <Bar
-                  dataKey="จำนวนที่มี"
-                  name="จำนวนทั้งหมด"
-                  fill="#94a3b8"
-                  radius={[4, 4, 0, 0]}
-                />
-                <Bar
-                  dataKey="เบิกใช้งาน"
-                  name="เบิกใช้งาน"
-                  fill="#3b82f6"
-                  radius={[4, 4, 0, 0]}
-                />
-                <Bar
-                  dataKey="คงเหลือ"
-                  name="คงเหลือ"
-                  fill="#22c55e"
-                  radius={[4, 4, 0, 0]}
-                />
-              </BarChart>
+                >
+                  <CartesianGrid
+                    strokeDasharray="3 3"
+                    vertical={false}
+                    stroke="currentColor"
+                    className="text-slate-200 dark:text-slate-700"
+                  />
+                  <XAxis
+                    dataKey="TDM Inventory"
+                    angle={isMobile ? -90 : -45}
+                    textAnchor={isMobile ? "end" : "end"}
+                    height={110}
+                    interval={0}
+                    tick={{ fontSize: 10, fill: "currentColor" }}
+                    className="text-slate-600 dark:text-slate-400"
+                    stroke="currentColor"
+                  />
+                  <YAxis
+                    tick={{ fontSize: 10, fill: "currentColor" }}
+                    className="text-slate-600 dark:text-slate-400"
+                    stroke="currentColor"
+                    width={40}
+                  />
+                  <Tooltip
+                    cursor={{ strokeDasharray: "3 3" }}
+                    contentStyle={{
+                      borderRadius: "8px",
+                      border: "none",
+                      boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
+                      backgroundColor: "#ffffff",
+                      color: "#1e293b",
+                    }}
+                  />
+                  <Legend
+                    verticalAlign="top"
+                    height={36}
+                    wrapperStyle={{
+                      color: "hsl(var(--foreground))",
+                      fontSize: "12px",
+                    }}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="จำนวนที่มี"
+                    name="จำนวนทั้งหมด"
+                    stroke="#94a3b8"
+                    strokeWidth={2}
+                    dot={{ fill: "#94a3b8", r: 3 }}
+                    activeDot={{ r: 5 }}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="เบิกใช้งาน"
+                    name="เบิกใช้งาน"
+                    stroke="#3b82f6"
+                    strokeWidth={2}
+                    dot={{ fill: "#3b82f6", r: 3 }}
+                    activeDot={{ r: 5 }}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="คงเหลือ"
+                    name="คงเหลือ"
+                    stroke="#22c55e"
+                    strokeWidth={2}
+                    dot={{ fill: "#22c55e", r: 3 }}
+                    activeDot={{ r: 5 }}
+                  />
+                </LineChart>
+              )}
             </ResponsiveContainer>
           </CardContent>
         </Card>

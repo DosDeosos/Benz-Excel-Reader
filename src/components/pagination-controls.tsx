@@ -1,5 +1,6 @@
 "use client";
 
+import { PageSizeSelector } from "@/components/page-size-selector";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
@@ -14,6 +15,8 @@ interface PaginationControlsProps {
   startIndex: number;
   endIndex: number;
   totalItems: number;
+  pageSize?: number;
+  onPageSizeChange?: (size: number) => void;
 }
 
 export function PaginationControls({
@@ -27,6 +30,8 @@ export function PaginationControls({
   startIndex,
   endIndex,
   totalItems,
+  pageSize,
+  onPageSizeChange,
 }: PaginationControlsProps) {
   const getPageNumbers = () => {
     const pages: (number | string)[] = [];
@@ -61,14 +66,22 @@ export function PaginationControls({
   };
 
   return (
-    <div className="flex items-center justify-between px-4 py-3 border-t">
-      <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
-        <span>
-          แสดง {startIndex} ถึง {endIndex} จาก {totalItems} รายการ
-        </span>
+    <div className="flex flex-col gap-4 px-4 py-3 border-t sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
+        {pageSize && onPageSizeChange && (
+          <PageSizeSelector
+            pageSize={pageSize}
+            onPageSizeChange={onPageSizeChange}
+          />
+        )}
+        <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
+          <span>
+            แสดง {startIndex} ถึง {endIndex} จาก {totalItems} รายการ
+          </span>
+        </div>
       </div>
 
-      <div className="flex items-center gap-2">
+      <div className="flex items-center justify-center gap-2">
         <Button
           variant="outline"
           size="sm"
@@ -77,7 +90,7 @@ export function PaginationControls({
           className="gap-1"
         >
           <ChevronLeft className="h-4 w-4" />
-          ก่อนหน้า
+          <span className="hidden sm:inline">ก่อนหน้า</span>
         </Button>
 
         <div className="flex items-center gap-1">
@@ -111,7 +124,7 @@ export function PaginationControls({
           disabled={!hasNextPage}
           className="gap-1"
         >
-          ถัดไป
+          <span className="hidden sm:inline">ถัดไป</span>
           <ChevronRight className="h-4 w-4" />
         </Button>
       </div>

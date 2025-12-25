@@ -2,6 +2,7 @@
 
 import { DashboardLayout } from "@/components/dashboard-layout";
 import { PaginationControls } from "@/components/pagination-controls";
+import { SortableHeader } from "@/components/sortable-header";
 import {
   Card,
   CardContent,
@@ -10,9 +11,17 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import inventoryJson from "@/data/inventory.json";
-import { usePagination } from "@/hooks/use-pagination";
 import { useSearch } from "@/hooks/use-search";
+import { useTableSorting } from "@/hooks/use-table-sorting";
 import { InventoryItem } from "@/types/excel-data";
 import { AlertTriangle, Package, TrendingUp } from "lucide-react";
 import { useEffect } from "react";
@@ -26,8 +35,13 @@ export default function InventoryPage() {
 
   const {
     paginatedData,
+    sortColumn,
+    sortDirection,
+    toggleSort,
     currentPage,
     totalPages,
+    pageSize,
+    changePageSize,
     goToPage,
     nextPage,
     previousPage,
@@ -37,7 +51,7 @@ export default function InventoryPage() {
     startIndex,
     endIndex,
     totalItems,
-  } = usePagination({ data: filteredData, itemsPerPage: 10 });
+  } = useTableSorting({ data: filteredData, itemsPerPage: 10 });
 
   useEffect(() => {
     resetToFirstPage();
@@ -139,62 +153,67 @@ export default function InventoryPage() {
               </div>
             </div>
           </CardHeader>
-          <CardContent>
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b">
-                    <th className="text-left py-3 px-4 font-semibold text-sm text-slate-700 dark:text-slate-300">
-                      TDM Inventory
-                    </th>
-                    <th className="text-left py-3 px-4 font-semibold text-sm text-slate-700 dark:text-slate-300">
-                      จำนวนที่มี
-                    </th>
-                    <th className="text-left py-3 px-4 font-semibold text-sm text-slate-700 dark:text-slate-300">
-                      เบิกใช้งาน
-                    </th>
-                    <th className="text-left py-3 px-4 font-semibold text-sm text-slate-700 dark:text-slate-300">
-                      คงเหลือ
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {paginatedData.map((item, index) => {
-                    return (
-                      <tr
-                        key={`${item["TDM Inventory"]}-${index}`}
-                        className={`border-b last:border-0 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors ${
-                          index % 2 === 0
-                            ? "bg-white dark:bg-slate-950"
-                            : "bg-slate-50 dark:bg-slate-900"
-                        }`}
-                      >
-                        <td className="py-3 px-4">
-                          <span className="text-sm font-medium text-slate-900 dark:text-slate-100">
-                            {item["TDM Inventory"]}
-                          </span>
-                        </td>
-                        <td className="py-3 px-4">
-                          <span className="text-sm text-slate-700 dark:text-slate-300">
-                            {item["จำนวนที่มี"]?.toLocaleString() || 0}
-                          </span>
-                        </td>
-                        <td className="py-3 px-4">
-                          <span className="text-sm text-slate-700 dark:text-slate-300">
-                            {item["เบิกใช้งาน"]?.toLocaleString() || 0}
-                          </span>
-                        </td>
-                        <td className="py-3 px-4">
-                          <span className="text-sm font-medium text-slate-900 dark:text-slate-100">
-                            {item["คงเหลือ"]?.toLocaleString() || 0}
-                          </span>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
+          <CardContent className="p-0">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-50">
+                    <SortableHeader
+                      column="TDM Inventory"
+                      label="TDM Inventory"
+                      sortColumn={sortColumn}
+                      sortDirection={sortDirection}
+                      onSort={toggleSort}
+                    />
+                  </TableHead>
+                  <TableHead className="hidden sm:table-cell">
+                    <SortableHeader
+                      column="จำนวนที่มี"
+                      label="จำนวนที่มี"
+                      sortColumn={sortColumn}
+                      sortDirection={sortDirection}
+                      onSort={toggleSort}
+                    />
+                  </TableHead>
+                  <TableHead className="hidden md:table-cell">
+                    <SortableHeader
+                      column="เบิกใช้งาน"
+                      label="เบิกใช้งาน"
+                      sortColumn={sortColumn}
+                      sortDirection={sortDirection}
+                      onSort={toggleSort}
+                    />
+                  </TableHead>
+                  <TableHead>
+                    <SortableHeader
+                      column="คงเหลือ"
+                      label="คงเหลือ"
+                      sortColumn={sortColumn}
+                      sortDirection={sortDirection}
+                      onSort={toggleSort}
+                    />
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {paginatedData.map((item, index) => (
+                  <TableRow key={`${item["TDM Inventory"]}-${index}`}>
+                    <TableCell className="font-medium">
+                      {item["TDM Inventory"]}
+                    </TableCell>
+                    <TableCell className="hidden sm:table-cell">
+                      {item["จำนวนที่มี"]?.toLocaleString() || 0}
+                    </TableCell>
+                    <TableCell className="hidden md:table-cell">
+                      {item["เบิกใช้งาน"]?.toLocaleString() || 0}
+                    </TableCell>
+                    <TableCell className="font-medium">
+                      {item["คงเหลือ"]?.toLocaleString() || 0}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           </CardContent>
           <PaginationControls
             currentPage={currentPage}
@@ -207,6 +226,8 @@ export default function InventoryPage() {
             startIndex={startIndex}
             endIndex={endIndex}
             totalItems={totalItems}
+            pageSize={pageSize}
+            onPageSizeChange={changePageSize}
           />
         </Card>
       </div>

@@ -2,6 +2,7 @@
 
 import { DashboardLayout } from "@/components/dashboard-layout";
 import { PaginationControls } from "@/components/pagination-controls";
+import { SortableHeader } from "@/components/sortable-header";
 import {
   Card,
   CardContent,
@@ -10,11 +11,18 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import dataJson from "@/data/data.json";
-import { usePagination } from "@/hooks/use-pagination";
 import { useSearch } from "@/hooks/use-search";
+import { useTableSorting } from "@/hooks/use-table-sorting";
 import { DataItem } from "@/types/excel-data";
-import { ArrowUpDown } from "lucide-react";
 import { useEffect } from "react";
 
 export default function DataCollectionPage() {
@@ -30,8 +38,13 @@ export default function DataCollectionPage() {
 
   const {
     paginatedData,
+    sortColumn,
+    sortDirection,
+    toggleSort,
     currentPage,
     totalPages,
+    pageSize,
+    changePageSize,
     goToPage,
     nextPage,
     previousPage,
@@ -41,7 +54,7 @@ export default function DataCollectionPage() {
     startIndex,
     endIndex,
     totalItems,
-  } = usePagination({ data: filteredData, itemsPerPage: 10 });
+  } = useTableSorting({ data: filteredData, itemsPerPage: 10 });
 
   useEffect(() => {
     resetToFirstPage();
@@ -80,83 +93,77 @@ export default function DataCollectionPage() {
               </div>
             </div>
           </CardHeader>
-          <CardContent>
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b">
-                    <th className="text-left py-3 px-4">
-                      <button className="flex items-center gap-2 font-semibold text-sm text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100">
-                        Hostname
-                        <ArrowUpDown className="h-3 w-3" />
-                      </button>
-                    </th>
-                    <th className="text-left py-3 px-4">
-                      <button className="flex items-center gap-2 font-semibold text-sm text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100">
-                        เลข ทรัพย์สิน
-                        <ArrowUpDown className="h-3 w-3" />
-                      </button>
-                    </th>
-                    <th className="text-left py-3 px-4">
-                      <button className="flex items-center gap-2 font-semibold text-sm text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100">
-                        Serial Number
-                        <ArrowUpDown className="h-3 w-3" />
-                      </button>
-                    </th>
-                    <th className="text-left py-3 px-4">
-                      <button className="flex items-center gap-2 font-semibold text-sm text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100">
-                        Asset Owner
-                        <ArrowUpDown className="h-3 w-3" />
-                      </button>
-                    </th>
-                    <th className="text-left py-3 px-4">
-                      <button className="flex items-center gap-2 font-semibold text-sm text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100">
-                        Location
-                        <ArrowUpDown className="h-3 w-3" />
-                      </button>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {paginatedData.map((item, index) => (
-                    <tr
-                      key={`${item.Hostname}-${index}`}
-                      className={`border-b last:border-0 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors ${
-                        index % 2 === 0
-                          ? "bg-white dark:bg-slate-950"
-                          : "bg-slate-50 dark:bg-slate-900"
-                      }`}
-                    >
-                      <td className="py-3 px-4">
-                        <span className="text-sm font-medium text-slate-900 dark:text-slate-100">
-                          {item.Hostname}
-                        </span>
-                      </td>
-                      <td className="py-3 px-4">
-                        <span className="text-sm text-slate-700 dark:text-slate-300">
-                          {item["เลข ทรัพย์สิน"] || "-"}
-                        </span>
-                      </td>
-                      <td className="py-3 px-4">
-                        <span className="text-sm text-slate-700 dark:text-slate-300">
-                          {item["Serial Number"] || "-"}
-                        </span>
-                      </td>
-                      <td className="py-3 px-4">
-                        <span className="text-sm text-slate-700 dark:text-slate-300">
-                          {item["Asset Owner"] || "-"}
-                        </span>
-                      </td>
-                      <td className="py-3 px-4">
-                        <span className="text-sm text-slate-600 dark:text-slate-400">
-                          {item["Location of Work"] || "-"}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+          <CardContent className="p-0">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-50">
+                    <SortableHeader
+                      column="Hostname"
+                      label="Hostname"
+                      sortColumn={sortColumn}
+                      sortDirection={sortDirection}
+                      onSort={toggleSort}
+                    />
+                  </TableHead>
+                  <TableHead className="hidden md:table-cell">
+                    <SortableHeader
+                      column="เลข ทรัพย์สิน"
+                      label="เลข ทรัพย์สิน"
+                      sortColumn={sortColumn}
+                      sortDirection={sortDirection}
+                      onSort={toggleSort}
+                    />
+                  </TableHead>
+                  <TableHead className="hidden lg:table-cell">
+                    <SortableHeader
+                      column="Serial Number"
+                      label="Serial Number"
+                      sortColumn={sortColumn}
+                      sortDirection={sortDirection}
+                      onSort={toggleSort}
+                    />
+                  </TableHead>
+                  <TableHead className="hidden xl:table-cell">
+                    <SortableHeader
+                      column="Asset Owner"
+                      label="Asset Owner"
+                      sortColumn={sortColumn}
+                      sortDirection={sortDirection}
+                      onSort={toggleSort}
+                    />
+                  </TableHead>
+                  <TableHead>
+                    <SortableHeader
+                      column="Location of Work"
+                      label="Location"
+                      sortColumn={sortColumn}
+                      sortDirection={sortDirection}
+                      onSort={toggleSort}
+                    />
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {paginatedData.map((item, index) => (
+                  <TableRow key={`${item.Hostname}-${index}`}>
+                    <TableCell className="font-medium">
+                      {item.Hostname}
+                    </TableCell>
+                    <TableCell className="hidden md:table-cell">
+                      {item["เลข ทรัพย์สิน"] || "-"}
+                    </TableCell>
+                    <TableCell className="hidden lg:table-cell">
+                      {item["Serial Number"] || "-"}
+                    </TableCell>
+                    <TableCell className="hidden xl:table-cell">
+                      {item["Asset Owner"] || "-"}
+                    </TableCell>
+                    <TableCell>{item["Location of Work"] || "-"}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           </CardContent>
           <PaginationControls
             currentPage={currentPage}
@@ -169,6 +176,8 @@ export default function DataCollectionPage() {
             startIndex={startIndex}
             endIndex={endIndex}
             totalItems={totalItems}
+            pageSize={pageSize}
+            onPageSizeChange={changePageSize}
           />
         </Card>
       </div>

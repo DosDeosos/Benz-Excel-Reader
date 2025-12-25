@@ -2,6 +2,7 @@
 
 import { DashboardLayout } from "@/components/dashboard-layout";
 import { PaginationControls } from "@/components/pagination-controls";
+import { SortableHeader } from "@/components/sortable-header";
 import {
   Card,
   CardContent,
@@ -10,9 +11,17 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import logJson from "@/data/log.json";
-import { usePagination } from "@/hooks/use-pagination";
 import { useSearch } from "@/hooks/use-search";
+import { useTableSorting } from "@/hooks/use-table-sorting";
 import { LogItem } from "@/types/excel-data";
 import { useEffect } from "react";
 
@@ -28,8 +37,13 @@ export default function LogPage() {
 
   const {
     paginatedData,
+    sortColumn,
+    sortDirection,
+    toggleSort,
     currentPage,
     totalPages,
+    pageSize,
+    changePageSize,
     goToPage,
     nextPage,
     previousPage,
@@ -39,7 +53,7 @@ export default function LogPage() {
     startIndex,
     endIndex,
     totalItems,
-  } = usePagination({ data: filteredData, itemsPerPage: 10 });
+  } = useTableSorting({ data: filteredData, itemsPerPage: 10 });
 
   useEffect(() => {
     resetToFirstPage();
@@ -80,80 +94,93 @@ export default function LogPage() {
               </div>
             </div>
           </CardHeader>
-          <CardContent>
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b">
-                    <th className="text-left py-3 px-4 font-semibold text-sm text-slate-700 dark:text-slate-300">
-                      ลำดับ
-                    </th>
-                    <th className="text-left py-3 px-4 font-semibold text-sm text-slate-700 dark:text-slate-300">
-                      ผู้ขอเบิก
-                    </th>
-                    <th className="text-left py-3 px-4 font-semibold text-sm text-slate-700 dark:text-slate-300">
-                      รายละเอียด
-                    </th>
-                    <th className="text-left py-3 px-4 font-semibold text-sm text-slate-700 dark:text-slate-300">
-                      ผู้ให้เบิก
-                    </th>
-                    <th className="text-left py-3 px-4 font-semibold text-sm text-slate-700 dark:text-slate-300">
-                      ผู้รับเบิก
-                    </th>
-                    <th className="text-left py-3 px-4 font-semibold text-sm text-slate-700 dark:text-slate-300">
-                      วันที่คืน
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {paginatedData.map((item, index) => (
-                    <tr
-                      key={`${item.No}-${index}`}
-                      className={`border-b last:border-0 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors ${
-                        index % 2 === 0
-                          ? "bg-white dark:bg-slate-950"
-                          : "bg-slate-50 dark:bg-slate-900"
-                      }`}
-                    >
-                      <td className="py-3 px-4">
-                        <span className="text-sm text-slate-700 dark:text-slate-300">
-                          {item.No || "-"}
-                        </span>
-                      </td>
-                      <td className="py-3 px-4">
-                        <span className="text-sm font-medium text-slate-900 dark:text-slate-100">
-                          {item["Name-Surename  ผู้ขอเบิก"] || "-"}
-                        </span>
-                      </td>
-                      <td className="py-3 px-4">
-                        <span className="text-sm text-slate-700 dark:text-slate-300">
-                          {item.Detail || "-"}
-                        </span>
-                      </td>
-                      <td className="py-3 px-4">
-                        <span className="text-sm text-slate-700 dark:text-slate-300">
-                          {item["ผู้ให้เบิก"] || "-"}
-                        </span>
-                      </td>
-                      <td className="py-3 px-4">
-                        <span className="text-sm text-slate-700 dark:text-slate-300">
-                          {item["ผู้รับเบิก"] || "-"}
-                        </span>
-                      </td>
-                      <td className="py-3 px-4">
-                        <span className="text-sm text-slate-600 dark:text-slate-400">
-                          {item["วันที่คืน"]
-                            ? new Date(item["วันที่คืน"]).toLocaleDateString(
-                                "th-TH"
-                              )
-                            : "-"}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+          <CardContent className="p-0">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-20">
+                    <SortableHeader
+                      column="No"
+                      label="ลำดับ"
+                      sortColumn={sortColumn}
+                      sortDirection={sortDirection}
+                      onSort={toggleSort}
+                    />
+                  </TableHead>
+                  <TableHead className="w-50">
+                    <SortableHeader
+                      column="Name-Surename  ผู้ขอเบิก"
+                      label="ผู้ขอเบิก"
+                      sortColumn={sortColumn}
+                      sortDirection={sortDirection}
+                      onSort={toggleSort}
+                    />
+                  </TableHead>
+                  <TableHead className="hidden md:table-cell">
+                    <SortableHeader
+                      column="Detail"
+                      label="รายละเอียด"
+                      sortColumn={sortColumn}
+                      sortDirection={sortDirection}
+                      onSort={toggleSort}
+                    />
+                  </TableHead>
+                  <TableHead className="hidden lg:table-cell">
+                    <SortableHeader
+                      column="ผู้ให้เบิก"
+                      label="ผู้ให้เบิก"
+                      sortColumn={sortColumn}
+                      sortDirection={sortDirection}
+                      onSort={toggleSort}
+                    />
+                  </TableHead>
+                  <TableHead className="hidden lg:table-cell">
+                    <SortableHeader
+                      column="ผู้รับเบิก"
+                      label="ผู้รับเบิก"
+                      sortColumn={sortColumn}
+                      sortDirection={sortDirection}
+                      onSort={toggleSort}
+                    />
+                  </TableHead>
+                  <TableHead className="hidden sm:table-cell">
+                    <SortableHeader
+                      column="วันที่คืน"
+                      label="วันที่คืน"
+                      sortColumn={sortColumn}
+                      sortDirection={sortDirection}
+                      onSort={toggleSort}
+                    />
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {paginatedData.map((item, index) => (
+                  <TableRow key={`${item.No}-${index}`}>
+                    <TableCell>{item.No || "-"}</TableCell>
+                    <TableCell className="font-medium">
+                      {item["Name-Surename  ผู้ขอเบิก"] || "-"}
+                    </TableCell>
+                    <TableCell className="hidden md:table-cell">
+                      {item.Detail || "-"}
+                    </TableCell>
+                    <TableCell className="hidden lg:table-cell">
+                      {item["ผู้ให้เบิก"] || "-"}
+                    </TableCell>
+                    <TableCell className="hidden lg:table-cell">
+                      {item["ผู้รับเบิก"] || "-"}
+                    </TableCell>
+                    <TableCell className="hidden sm:table-cell">
+                      {item["วันที่คืน"]
+                        ? new Date(item["วันที่คืน"]).toLocaleDateString(
+                            "th-TH"
+                          )
+                        : "-"}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           </CardContent>
           <PaginationControls
             currentPage={currentPage}
@@ -166,6 +193,8 @@ export default function LogPage() {
             startIndex={startIndex}
             endIndex={endIndex}
             totalItems={totalItems}
+            pageSize={pageSize}
+            onPageSizeChange={changePageSize}
           />
         </Card>
       </div>

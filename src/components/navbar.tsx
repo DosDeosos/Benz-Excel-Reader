@@ -67,10 +67,10 @@ export function Navbar({ onMenuClick }: NavbarProps) {
             <Menu className="h-5 w-5" />
           </Button>
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-linear-to-br from-blue-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/20 min-[350px]:flex">
+            <div className="w-8 h-8 rounded-lg bg-linear-to-br from-blue-600 to-indigo-600 items-center justify-center shadow-lg shadow-blue-500/20 hidden sm:flex">
               <span className="text-white font-bold text-lg">B</span>
             </div>
-            <h1 className="text-xl font-bold bg-clip-text text-transparent bg-linear-to-r from-slate-900 via-blue-800 to-slate-900 dark:from-white dark:via-blue-200 dark:to-white">
+            <h1 className="text-xl font-bold bg-clip-text text-transparent bg-linear-to-r from-slate-900 via-blue-800 to-slate-900 dark:from-white dark:via-blue-200 dark:to-white hidden sm:block">
               Benz&apos;s Excel Reader
             </h1>
           </div>
