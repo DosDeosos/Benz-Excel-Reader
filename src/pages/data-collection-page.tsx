@@ -8,53 +8,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import dataJson from "@/data/data.json";
+import { DataItem } from "@/types/excel-data";
 import { ArrowUpDown, Download, Filter, Search } from "lucide-react";
 
 export default function DataCollectionPage() {
-  const sampleData = [
-    {
-      id: "D001",
-      name: "การวิเคราะห์ผลิตภัณฑ์",
-      category: "ขาย",
-      records: 1250,
-      lastUpdated: "2024-01-15",
-    },
-    {
-      id: "D002",
-      name: "พฤติกรรมลูกค้า",
-      category: "การตลาด",
-      records: 3420,
-      lastUpdated: "2024-01-14",
-    },
-    {
-      id: "D003",
-      name: "บันทึกคลังสินค้า",
-      category: "การดำเนินงาน",
-      records: 892,
-      lastUpdated: "2024-01-15",
-    },
-    {
-      id: "D004",
-      name: "รายงานทางการเงิน",
-      category: "การเงิน",
-      records: 567,
-      lastUpdated: "2024-01-13",
-    },
-    {
-      id: "D005",
-      name: "การมีส่วนร่วมของผู้ใช้",
-      category: "การวิเคราะห์",
-      records: 2156,
-      lastUpdated: "2024-01-15",
-    },
-    {
-      id: "D006",
-      name: "ประสิทธิภาพการขาย",
-      category: "ขาย",
-      records: 4321,
-      lastUpdated: "2024-01-12",
-    },
-  ];
+  const data: DataItem[] = dataJson as DataItem[];
 
   return (
     <DashboardLayout>
@@ -74,7 +33,7 @@ export default function DataCollectionPage() {
               <div>
                 <CardTitle>คอลเลกชันข้อมูล</CardTitle>
                 <CardDescription>
-                  ทั้งหมด {sampleData.length} คอลเลกชันที่พร้อมใช้งาน
+                  ทั้งหมด {data.length} รายการที่พร้อมใช้งาน
                 </CardDescription>
               </div>
               <div className="flex flex-col sm:flex-row gap-2">
@@ -100,45 +59,40 @@ export default function DataCollectionPage() {
                   <tr className="border-b">
                     <th className="text-left py-3 px-4">
                       <button className="flex items-center gap-2 font-semibold text-sm text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100">
-                        ไอดี
+                        Hostname
                         <ArrowUpDown className="h-3 w-3" />
                       </button>
                     </th>
                     <th className="text-left py-3 px-4">
                       <button className="flex items-center gap-2 font-semibold text-sm text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100">
-                        ชื่อ
+                        เลข ทรัพย์สิน
                         <ArrowUpDown className="h-3 w-3" />
                       </button>
                     </th>
                     <th className="text-left py-3 px-4">
                       <button className="flex items-center gap-2 font-semibold text-sm text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100">
-                        หมวดหมู่
+                        Serial Number
                         <ArrowUpDown className="h-3 w-3" />
                       </button>
                     </th>
                     <th className="text-left py-3 px-4">
                       <button className="flex items-center gap-2 font-semibold text-sm text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100">
-                        บันทึก
+                        Asset Owner
                         <ArrowUpDown className="h-3 w-3" />
                       </button>
                     </th>
                     <th className="text-left py-3 px-4">
                       <button className="flex items-center gap-2 font-semibold text-sm text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100">
-                        อัปเดตล่าสุด
+                        Location
                         <ArrowUpDown className="h-3 w-3" />
                       </button>
-                    </th>
-                    <th className="text-left py-3 px-4">
-                      <span className="font-semibold text-sm text-slate-700 dark:text-slate-300">
-                        การดำเนินการ
-                      </span>
                     </th>
                   </tr>
                 </thead>
                 <tbody>
-                  {sampleData.map((item, index) => (
+                  {data.map((item, index) => (
                     <tr
-                      key={item.id}
+                      key={`${item.Hostname}-${index}`}
                       className={`border-b last:border-0 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors ${
                         index % 2 === 0
                           ? "bg-white dark:bg-slate-950"
@@ -147,38 +101,28 @@ export default function DataCollectionPage() {
                     >
                       <td className="py-3 px-4">
                         <span className="text-sm font-medium text-slate-900 dark:text-slate-100">
-                          {item.id}
+                          {item.Hostname}
                         </span>
                       </td>
                       <td className="py-3 px-4">
                         <span className="text-sm text-slate-700 dark:text-slate-300">
-                          {item.name}
-                        </span>
-                      </td>
-                      <td className="py-3 px-4">
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
-                          {item.category}
+                          {item["เลข ทรัพย์สิน"] || "-"}
                         </span>
                       </td>
                       <td className="py-3 px-4">
                         <span className="text-sm text-slate-700 dark:text-slate-300">
-                          {item.records.toLocaleString()}
+                          {item["Serial Number"] || "-"}
+                        </span>
+                      </td>
+                      <td className="py-3 px-4">
+                        <span className="text-sm text-slate-700 dark:text-slate-300">
+                          {item["Asset Owner"] || "-"}
                         </span>
                       </td>
                       <td className="py-3 px-4">
                         <span className="text-sm text-slate-600 dark:text-slate-400">
-                          {item.lastUpdated}
+                          {item["Location of Work"] || "-"}
                         </span>
-                      </td>
-                      <td className="py-3 px-4">
-                        <div className="flex gap-2">
-                          <Button variant="ghost" size="sm">
-                            ดู
-                          </Button>
-                          <Button variant="ghost" size="sm">
-                            แก้ไข
-                          </Button>
-                        </div>
                       </td>
                     </tr>
                   ))}

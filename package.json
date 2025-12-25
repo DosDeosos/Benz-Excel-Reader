@@ -8,7 +8,9 @@
     "start": "next start",
     "lint": "eslint",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "extract:excel": "node scripts/extract-excel.js",
+    "extract:excel:custom": "node scripts/extract-excel.js"
   },
   "dependencies": {
     "@radix-ui/react-label": "^2.1.8",
@@ -22,7 +24,8 @@
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
     "sweetalert2": "^11.26.17",
-    "tailwind-merge": "^3.4.0"
+    "tailwind-merge": "^3.4.0",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.0.6",
