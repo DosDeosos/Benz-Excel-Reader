@@ -11,7 +11,8 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "extract:excel": "node scripts/extract-excel.js",
-    "extract:excel:custom": "node scripts/extract-excel.js"
+    "extract:excel:custom": "node scripts/extract-excel.js",
+    "deploy": "node scripts/run-all.js"
   },
   "dependencies": {
     "@radix-ui/react-label": "^2.1.8",
