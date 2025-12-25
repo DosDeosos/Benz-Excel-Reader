@@ -14,7 +14,7 @@ import inventoryJson from "@/data/inventory.json";
 import { usePagination } from "@/hooks/use-pagination";
 import { useSearch } from "@/hooks/use-search";
 import { InventoryItem } from "@/types/excel-data";
-import { AlertTriangle, Package, Search, TrendingUp } from "lucide-react";
+import { AlertTriangle, Package, TrendingUp } from "lucide-react";
 import { useEffect } from "react";
 
 export default function InventoryPage() {
@@ -129,7 +129,6 @@ export default function InventoryPage() {
               </div>
               <div className="flex flex-col sm:flex-row gap-2">
                 <div className="relative flex-1 sm:w-64">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
                   <Input
                     placeholder="ค้นหาคลังสินค้า..."
                     className="pl-9"

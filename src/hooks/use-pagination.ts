@@ -22,13 +22,16 @@ export function usePagination<T>({
     return data.slice(startIndex, endIndex);
   }, [data, validCurrentPage, itemsPerPage]);
 
-  const goToPage = useCallback((page: number) => {
-    setCurrentPage(() => {
-      const maxPages = Math.ceil(data.length / itemsPerPage);
-      const newPage = Math.max(1, Math.min(page, maxPages));
-      return newPage;
-    });
-  }, [data.length, itemsPerPage]);
+  const goToPage = useCallback(
+    (page: number) => {
+      setCurrentPage(() => {
+        const maxPages = Math.ceil(data.length / itemsPerPage);
+        const newPage = Math.max(1, Math.min(page, maxPages));
+        return newPage;
+      });
+    },
+    [data.length, itemsPerPage]
+  );
 
   const nextPage = useCallback(() => {
     setCurrentPage((prev) => {
@@ -40,7 +43,7 @@ export function usePagination<T>({
   const previousPage = useCallback(() => {
     setCurrentPage((prev) => (prev > 1 ? prev - 1 : prev));
   }, []);
-  
+
   const resetToFirstPage = useCallback(() => {
     setCurrentPage(1);
   }, []);

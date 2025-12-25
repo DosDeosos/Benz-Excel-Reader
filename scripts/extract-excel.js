@@ -20,16 +20,16 @@ function getCellValue(cell) {
   if (cell.value === null || cell.value === undefined) {
     return null;
   }
-  if (cell.value && typeof cell.value === 'object' && cell.value.error) {
+  if (cell.value && typeof cell.value === "object" && cell.value.error) {
     return null;
   }
-  if (cell.value && typeof cell.value === 'object' && cell.value.richText) {
-    return cell.value.richText.map(rt => rt.text).join('');
+  if (cell.value && typeof cell.value === "object" && cell.value.richText) {
+    return cell.value.richText.map((rt) => rt.text).join("");
   }
-  if (cell.value && typeof cell.value === 'object' && 'result' in cell.value) {
+  if (cell.value && typeof cell.value === "object" && "result" in cell.value) {
     return cell.value.result;
   }
-  if (cell.value && typeof cell.value === 'object' && cell.value.text) {
+  if (cell.value && typeof cell.value === "object" && cell.value.text) {
     return cell.value.text;
   }
   return cell.value;
@@ -108,6 +108,42 @@ async function extractExcelData() {
       console.log(`  Saved to: ${inventoryOutputPath}`);
     } else {
       console.warn('⚠ Warning: "Inventory" sheet not found in Excel file');
+    }
+
+    const logSheet = workbook.getWorksheet("Log In-Out");
+    if (logSheet) {
+      const logJson = [];
+      const headers = [];
+
+      logSheet.getRow(1).eachCell((cell, colNumber) => {
+        headers[colNumber] = getCellValue(cell);
+      });
+
+      logSheet.eachRow((row, rowNumber) => {
+        if (rowNumber > 1) {
+          const rowData = {};
+          row.eachCell((cell, colNumber) => {
+            const header = headers[colNumber];
+            if (header) {
+              rowData[header] = getCellValue(cell);
+            }
+          });
+          if (Object.keys(rowData).length > 0) {
+            logJson.push(rowData);
+          }
+        }
+      });
+
+      const logOutputPath = path.join(outputDir, "log.json");
+      fs.writeFileSync(
+        logOutputPath,
+        JSON.stringify(logJson, null, 2),
+        "utf-8"
+      );
+      console.log(`✓ Extracted Log In-Out sheet: ${logJson.length} rows`);
+      console.log(`  Saved to: ${logOutputPath}`);
+    } else {
+      console.warn('⚠ Warning: "Log In-Out" sheet not found in Excel file');
     }
 
     console.log("\n✅ Excel extraction completed successfully!\n");

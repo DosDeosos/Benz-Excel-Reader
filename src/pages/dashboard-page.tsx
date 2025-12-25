@@ -98,76 +98,74 @@ export default function DashboardPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="h-125 w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart
-                  data={inventoryData}
-                  margin={{
-                    top: 20,
-                    right: 30,
-                    left: 20,
-                    bottom: 70,
+            <ResponsiveContainer width="100%" height={500}>
+              <BarChart
+                data={inventoryData}
+                margin={{
+                  top: 20,
+                  right: 30,
+                  left: 20,
+                  bottom: 70,
+                }}
+              >
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  vertical={false}
+                  stroke="currentColor"
+                  className="text-slate-200 dark:text-slate-700"
+                />
+                <XAxis
+                  dataKey="TDM Inventory"
+                  angle={-45}
+                  textAnchor="end"
+                  height={80}
+                  interval={0}
+                  tick={{ fontSize: 12, fill: "currentColor" }}
+                  className="text-slate-600 dark:text-slate-400"
+                  stroke="currentColor"
+                />
+                <YAxis
+                  tick={{ fontSize: 12, fill: "currentColor" }}
+                  className="text-slate-600 dark:text-slate-400"
+                  stroke="currentColor"
+                />
+                <Tooltip
+                  cursor={{ fill: "transparent" }}
+                  contentStyle={{
+                    borderRadius: "8px",
+                    border: "none",
+                    boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
+                    backgroundColor: "#ffffff",
+                    color: "#1e293b",
                   }}
-                >
-                  <CartesianGrid
-                    strokeDasharray="3 3"
-                    vertical={false}
-                    stroke="currentColor"
-                    className="text-slate-200 dark:text-slate-700"
-                  />
-                  <XAxis
-                    dataKey="TDM Inventory"
-                    angle={-45}
-                    textAnchor="end"
-                    height={80}
-                    interval={0}
-                    tick={{ fontSize: 12, fill: "currentColor" }}
-                    className="text-slate-600 dark:text-slate-400"
-                    stroke="currentColor"
-                  />
-                  <YAxis
-                    tick={{ fontSize: 12, fill: "currentColor" }}
-                    className="text-slate-600 dark:text-slate-400"
-                    stroke="currentColor"
-                  />
-                  <Tooltip
-                    cursor={{ fill: "transparent" }}
-                    contentStyle={{
-                      borderRadius: "8px",
-                      border: "none",
-                      boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
-                      backgroundColor: "#ffffff",
-                      color: "#1e293b",
-                    }}
-                  />
-                  <Legend
-                    verticalAlign="top"
-                    height={36}
-                    wrapperStyle={{
-                      color: "hsl(var(--foreground))",
-                    }}
-                  />
-                  <Bar
-                    dataKey="จำนวนที่มี"
-                    name="จำนวนทั้งหมด"
-                    fill="#94a3b8"
-                    radius={[4, 4, 0, 0]}
-                  />
-                  <Bar
-                    dataKey="เบิกใช้งาน"
-                    name="เบิกใช้งาน"
-                    fill="#3b82f6"
-                    radius={[4, 4, 0, 0]}
-                  />
-                  <Bar
-                    dataKey="คงเหลือ"
-                    name="คงเหลือ"
-                    fill="#22c55e"
-                    radius={[4, 4, 0, 0]}
-                  />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
+                />
+                <Legend
+                  verticalAlign="top"
+                  height={36}
+                  wrapperStyle={{
+                    color: "hsl(var(--foreground))",
+                  }}
+                />
+                <Bar
+                  dataKey="จำนวนที่มี"
+                  name="จำนวนทั้งหมด"
+                  fill="#94a3b8"
+                  radius={[4, 4, 0, 0]}
+                />
+                <Bar
+                  dataKey="เบิกใช้งาน"
+                  name="เบิกใช้งาน"
+                  fill="#3b82f6"
+                  radius={[4, 4, 0, 0]}
+                />
+                <Bar
+                  dataKey="คงเหลือ"
+                  name="คงเหลือ"
+                  fill="#22c55e"
+                  radius={[4, 4, 0, 0]}
+                />
+              </BarChart>
+            </ResponsiveContainer>
           </CardContent>
         </Card>
       </div>

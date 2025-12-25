@@ -10,6 +10,15 @@ export interface DataItem {
   คงเหลือ?: number;
 }
 
+export interface LogItem {
+  No?: number;
+  "Name-Surename  ผู้ขอเบิก"?: string;
+  Detail?: string;
+  ผู้ให้เบิก?: string;
+  ผู้รับเบิก?: string;
+  วันที่คืน?: string;
+}
+
 export interface InventoryItem {
   Hostname: string;
   "เลข ทรัพย์สิน"?: string;

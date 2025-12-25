@@ -96,7 +96,7 @@ export function PaginationControls({
                 variant={currentPage === page ? "default" : "outline"}
                 size="sm"
                 onClick={() => onPageChange(page as number)}
-                className="min-w-[2.5rem]"
+                className="min-w-10"
               >
                 {page}
               </Button>

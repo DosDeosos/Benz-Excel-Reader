@@ -10,22 +10,20 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import dataJson from "@/data/data.json";
+import logJson from "@/data/log.json";
 import { usePagination } from "@/hooks/use-pagination";
 import { useSearch } from "@/hooks/use-search";
-import { DataItem } from "@/types/excel-data";
-import { ArrowUpDown } from "lucide-react";
+import { LogItem } from "@/types/excel-data";
 import { useEffect } from "react";
 
-export default function DataCollectionPage() {
-  const data: DataItem[] = dataJson as DataItem[];
+export default function LogPage() {
+  const data: LogItem[] = logJson as LogItem[];
 
   const { query, setQuery, filteredData } = useSearch(data, [
-    "Hostname",
-    "เลข ทรัพย์สิน",
-    "Serial Number",
-    "Asset Owner",
-    "Location of Work",
+    "Name-Surename  ผู้ขอเบิก",
+    "Detail",
+    "ผู้ให้เบิก",
+    "ผู้รับเบิก",
   ]);
 
   const {
@@ -52,10 +50,10 @@ export default function DataCollectionPage() {
       <div className="space-y-8">
         <div>
           <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-50">
-            การจัดการข้อมูล
+            บันทึกการเบิก-คืน
           </h1>
           <p className="text-slate-600 dark:text-slate-400 mt-2">
-            ดูและจัดการคอลเลกชันข้อมูลของคุณ
+            ติดตามประวัติการเบิกและคืนอุปกรณ์
           </p>
         </div>
 
@@ -63,15 +61,17 @@ export default function DataCollectionPage() {
           <CardHeader>
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
               <div>
-                <CardTitle>คอลเลกชันข้อมูล</CardTitle>
+                <CardTitle className="flex items-center gap-2">
+                  บันทึกการเบิก-คืน
+                </CardTitle>
                 <CardDescription>
-                  ทั้งหมด {filteredData.length} รายการที่พร้อมใช้งาน
+                  ทั้งหมด {filteredData.length} รายการ
                 </CardDescription>
               </div>
               <div className="flex flex-col sm:flex-row gap-2">
                 <div className="relative flex-1 sm:w-64">
                   <Input
-                    placeholder="ค้นหาข้อมูล..."
+                    placeholder="ค้นหาบันทึก..."
                     className="pl-9"
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
@@ -85,42 +85,30 @@ export default function DataCollectionPage() {
               <table className="w-full">
                 <thead>
                   <tr className="border-b">
-                    <th className="text-left py-3 px-4">
-                      <button className="flex items-center gap-2 font-semibold text-sm text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100">
-                        Hostname
-                        <ArrowUpDown className="h-3 w-3" />
-                      </button>
+                    <th className="text-left py-3 px-4 font-semibold text-sm text-slate-700 dark:text-slate-300">
+                      ลำดับ
                     </th>
-                    <th className="text-left py-3 px-4">
-                      <button className="flex items-center gap-2 font-semibold text-sm text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100">
-                        เลข ทรัพย์สิน
-                        <ArrowUpDown className="h-3 w-3" />
-                      </button>
+                    <th className="text-left py-3 px-4 font-semibold text-sm text-slate-700 dark:text-slate-300">
+                      ผู้ขอเบิก
                     </th>
-                    <th className="text-left py-3 px-4">
-                      <button className="flex items-center gap-2 font-semibold text-sm text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100">
-                        Serial Number
-                        <ArrowUpDown className="h-3 w-3" />
-                      </button>
+                    <th className="text-left py-3 px-4 font-semibold text-sm text-slate-700 dark:text-slate-300">
+                      รายละเอียด
                     </th>
-                    <th className="text-left py-3 px-4">
-                      <button className="flex items-center gap-2 font-semibold text-sm text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100">
-                        Asset Owner
-                        <ArrowUpDown className="h-3 w-3" />
-                      </button>
+                    <th className="text-left py-3 px-4 font-semibold text-sm text-slate-700 dark:text-slate-300">
+                      ผู้ให้เบิก
                     </th>
-                    <th className="text-left py-3 px-4">
-                      <button className="flex items-center gap-2 font-semibold text-sm text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100">
-                        Location
-                        <ArrowUpDown className="h-3 w-3" />
-                      </button>
+                    <th className="text-left py-3 px-4 font-semibold text-sm text-slate-700 dark:text-slate-300">
+                      ผู้รับเบิก
+                    </th>
+                    <th className="text-left py-3 px-4 font-semibold text-sm text-slate-700 dark:text-slate-300">
+                      วันที่คืน
                     </th>
                   </tr>
                 </thead>
                 <tbody>
                   {paginatedData.map((item, index) => (
                     <tr
-                      key={`${item.Hostname}-${index}`}
+                      key={`${item.No}-${index}`}
                       className={`border-b last:border-0 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors ${
                         index % 2 === 0
                           ? "bg-white dark:bg-slate-950"
@@ -128,28 +116,37 @@ export default function DataCollectionPage() {
                       }`}
                     >
                       <td className="py-3 px-4">
+                        <span className="text-sm text-slate-700 dark:text-slate-300">
+                          {item.No || "-"}
+                        </span>
+                      </td>
+                      <td className="py-3 px-4">
                         <span className="text-sm font-medium text-slate-900 dark:text-slate-100">
-                          {item.Hostname}
+                          {item["Name-Surename  ผู้ขอเบิก"] || "-"}
                         </span>
                       </td>
                       <td className="py-3 px-4">
                         <span className="text-sm text-slate-700 dark:text-slate-300">
-                          {item["เลข ทรัพย์สิน"] || "-"}
+                          {item.Detail || "-"}
                         </span>
                       </td>
                       <td className="py-3 px-4">
                         <span className="text-sm text-slate-700 dark:text-slate-300">
-                          {item["Serial Number"] || "-"}
+                          {item["ผู้ให้เบิก"] || "-"}
                         </span>
                       </td>
                       <td className="py-3 px-4">
                         <span className="text-sm text-slate-700 dark:text-slate-300">
-                          {item["Asset Owner"] || "-"}
+                          {item["ผู้รับเบิก"] || "-"}
                         </span>
                       </td>
                       <td className="py-3 px-4">
                         <span className="text-sm text-slate-600 dark:text-slate-400">
-                          {item["Location of Work"] || "-"}
+                          {item["วันที่คืน"]
+                            ? new Date(item["วันที่คืน"]).toLocaleDateString(
+                                "th-TH"
+                              )
+                            : "-"}
                         </span>
                       </td>
                     </tr>

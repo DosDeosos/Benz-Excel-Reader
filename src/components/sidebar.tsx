@@ -6,6 +6,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Database,
+  FileText,
   LayoutDashboard,
   Package,
   X,
@@ -35,6 +36,11 @@ const navigationItems = [
     name: "คลังสินค้า",
     href: "/inventory",
     icon: Package,
+  },
+  {
+    name: "บันทึกการเบิก-คืน",
+    href: "/log",
+    icon: FileText,
   },
 ];
 
